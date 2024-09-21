@@ -12,32 +12,40 @@ const wss = new WebSocket.Server({ noServer: true });
 
 // เมื่อมีการเชื่อมต่อ WebSocket
 wss.on('connection', (ws) => {
+  console.log('WebSocket connection established');
+
   ws.on('message', (message) => {
     try {
       const videoBuffer = Buffer.from(message);
       console.log(`Received video of size: ${videoBuffer.length} bytes`);
-      
-      const inputVideoPath = 'uploads/temp_video.mp4';
+
+      const inputVideoPath = path.join(__dirname, 'uploads', 'upload.mp4');
       fs.writeFileSync(inputVideoPath, videoBuffer);
 
-      if (fs.existsSync(inputVideoPath)) {
-        console.log(`Video saved to ${inputVideoPath}`);
-      } else {
-        console.error('Failed to save video file.');
-      }
+      const outputVideoPath = path.join(__dirname, 'result', 'result.mp4');
+      exec(`python detect_video.py "${inputVideoPath}" "${outputVideoPath}"`, (error, stdout, stderr) => {
 
-      const outputVideoPath = 'result/processed_video.mp4';
-      exec(`python detect_video.py ${inputVideoPath} ${outputVideoPath}`, (error, stdout, stderr) => {
-        if (error || stderr) {
-          console.error(`Processing error: ${error || stderr}`);
+
+        if (error) {
+          console.error(`Processing error: ${error.message}`);
           ws.send('Error processing video');
-        } else {
-          ws.send(`http://localhost:4000/${outputVideoPath}`);
+          return;
         }
+
+        console.log('Video processed successfully');
+        ws.send(`http://localhost:${port}/result/result.mp4`);
       });
     } catch (err) {
       console.error(`Failed to process message: ${err}`);
     }
+  });
+
+  ws.on('close', () => {
+    console.log('WebSocket connection closed');
+  });
+
+  ws.on('error', (err) => {
+    console.error('WebSocket error:', err);
   });
 });
 
