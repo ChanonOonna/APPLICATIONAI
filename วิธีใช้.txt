@@ -1,0 +1,5 @@
+1. เปิด api/server.js
+open terminal
+nodemon server.js
+2 เปิด flutter 
+run flutter 
