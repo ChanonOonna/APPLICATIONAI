@@ -1,5 +1,6 @@
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'service.dart';
 import 'result.dart';
 
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Video Upload App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: UploadPage(),
@@ -25,10 +26,13 @@ class UploadPage extends StatefulWidget {
 class _UploadPageState extends State<UploadPage> {
   html.File? _videoFile;
   final ApiService apiService = ApiService('ws://localhost:4000');
-  bool _isProcessing = false; // เพิ่มตัวแปรสถานะการประมวลผล
+  bool _isProcessing = false;
+  final AudioPlayer audioPlayer = AudioPlayer();
+  final AudioCache player = AudioCache();
 
   Future<void> _pickVideo() async {
-    final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    final html.FileUploadInputElement uploadInput =
+        html.FileUploadInputElement();
     uploadInput.accept = 'video/*';
     uploadInput.click();
 
@@ -41,11 +45,12 @@ class _UploadPageState extends State<UploadPage> {
     });
   }
 
-  // ฟังก์ชันเพื่อแสดง popup ระหว่างการประมวลผล พร้อมปุ่มยกเลิก
   Future<void> _showProcessingDialog(BuildContext context) {
+    player.play('sound.mp3');
+
     return showDialog(
       context: context,
-      barrierDismissible: false, // ห้ามปิด popup จนกว่าจะกดยกเลิก
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -60,11 +65,12 @@ class _UploadPageState extends State<UploadPage> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    // หยุดการประมวลผลและปิด popup
+                    player.play('sound1.mp3');
                     setState(() {
                       _isProcessing = false;
                     });
-                    Navigator.pop(context); // ปิด popup
+                    Navigator.pop(context);
+                    audioPlayer.stop();
                   },
                   child: Text('Cancel'),
                 ),
@@ -79,22 +85,28 @@ class _UploadPageState extends State<UploadPage> {
   Future<void> _uploadVideo() async {
     if (_videoFile != null) {
       setState(() {
-        _isProcessing = true; // เริ่มประมวลผล
+        _isProcessing = true;
       });
 
-      // แสดง popup ระหว่างประมวลผล
       _showProcessingDialog(context);
 
       apiService.sendVideo(_videoFile!);
+
       apiService.listenForResults((videoUrl) {
         if (_isProcessing) {
-          Navigator.pop(context); // ปิด popup เมื่อประมวลผลเสร็จ
+          Navigator.pop(context);
+          setState(() {
+            _isProcessing = false;
+          });
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ResultPage(videoUrl: videoUrl),
             ),
           );
+
+          audioPlayer.stop();
         }
       });
     }
@@ -104,34 +116,65 @@ class _UploadPageState extends State<UploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Upload Video')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _videoFile == null
-                  ? Text('No video selected.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500))
-                  : Text('Selected video: ${_videoFile!.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _pickVideo,
-                child: Text('Pick Video'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/pic1.png'), // ใส่ภาพพื้นหลังที่นี่
+            fit: BoxFit.cover, // กำหนดให้ภาพเต็มพื้นที่
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(16), // เพิ่ม padding
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.8), // กำหนดสีพื้นหลังโปร่งแสง
+                    borderRadius: BorderRadius.circular(10), // ทำให้มุมมน
+                  ),
+                  child: _videoFile == null
+                      ? Text(
+                          'ยังไม่ได้เลือกคลิปวิดีโอ',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black, // เปลี่ยนสีตัวอักษรให้ชัดเจนขึ้น
+                          ),
+                        )
+                      : Text(
+                          'ได้เลือก : ${_videoFile!.name} เเล้ว',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black, // เปลี่ยนสีตัวอักษรให้ชัดเจนขึ้น
+                          ),
+                        ),
                 ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _uploadVideo,
-                child: Text('Upload'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _pickVideo,
+                  child: Text('Pick Video'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _uploadVideo,
+                  child: Text('Upload'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

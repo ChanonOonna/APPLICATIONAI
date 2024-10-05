@@ -33,7 +33,8 @@ dependencies:
   image_picker: ^0.8.5+3
   http: ^0.13.5
   video_player: ^2.2.10  
-  audioplayers: ^1.0.1
+  audioplayers: ^0.20.1
+  
   
   
 
@@ -70,6 +71,12 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/sound.mp3
+    - assets/sound1.mp3
+    - assets/sound2.mp3
+    - assets/pic1.png
+    - assets/pic1.jpg
+    - assets/pic1.avif
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
