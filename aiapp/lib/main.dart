@@ -88,17 +88,22 @@ class _UploadPageState extends State<UploadPage> {
         _isProcessing = true;
       });
 
+      // เปิด popup แสดงสถานะการประมวลผล
       _showProcessingDialog(context);
 
+      // ส่งวิดีโอไปยัง API
       apiService.sendVideo(_videoFile!);
 
+      // ฟังผลลัพธ์จาก API
       apiService.listenForResults((videoUrl) {
         if (_isProcessing) {
+          // ปิด popup เมื่อประมวลผลเสร็จ
           Navigator.pop(context);
           setState(() {
             _isProcessing = false;
           });
 
+          // นำทางไปยังหน้า ResultPage
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -106,6 +111,7 @@ class _UploadPageState extends State<UploadPage> {
             ),
           );
 
+          // หยุดเสียงเมื่อประมวลผลเสร็จสิ้น
           audioPlayer.stop();
         }
       });
