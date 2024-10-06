@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'first.dart';
+import 'main.dart';
+import 'member.dart';
+
 
 class ResultPage extends StatefulWidget {
   final String videoUrl;
@@ -34,7 +38,7 @@ class _ResultPageState extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Processed Video')),
+      appBar: AppBar(title: Text('ผลลัพธ์การประมวลผล')),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -83,11 +87,15 @@ class _ResultPageState extends State<ResultPage> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _controller.value.isPlaying ? _controller.pause() : _controller.play();
+                          _controller.value.isPlaying
+                              ? _controller.pause()
+                              : _controller.play();
                         });
                       },
                       child: Icon(
-                        _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                        _controller.value.isPlaying
+                            ? Icons.pause
+                            : Icons.play_arrow,
                         size: screenWidth * 0.08, // ขนาดไอคอนปรับตามหน้าจอ
                       ),
                       style: ElevatedButton.styleFrom(
@@ -101,6 +109,41 @@ class _ResultPageState extends State<ResultPage> {
             );
           },
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'ไปหน้า first.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.upload_outlined),
+            label: 'ไปหน้า main.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'ไปหน้า member.dart',
+          ),
+        ],
+        onTap: (index) {
+          // Directly navigate based on the index
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CurrencyDetectionApp()), // Replace with your FirstPage widget
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UploadPage()), // Replace with your MainPage widget
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MemberPage()), // Replace with your MemberPage widget
+            );
+          }
+        },
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'first.dart' ;
+import 'first.dart';
+import 'main.dart';
 
 class MemberPage extends StatelessWidget {
   @override
@@ -59,7 +60,7 @@ class MemberPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20), // เพิ่มระยะห่างระหว่างสมาชิกแต่ละคน
-                  
+
                   // สมาชิกคนที่ 2
                   Container(
                     width: 400,
@@ -79,7 +80,6 @@ class MemberPage extends StatelessWidget {
                             fontSize: 30, // ขนาดฟอนต์ที่ใหญ่ขึ้น
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            
                           ),
                         ),
                         SizedBox(height: 5),
@@ -97,27 +97,48 @@ class MemberPage extends StatelessWidget {
                   SizedBox(height: 20), // เพิ่มระยะห่างระหว่างข้อมูลและปุ่ม
 
                   // ปุ่มกลับไปหน้าแรก
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // กลับไปที่หน้า first.dart
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CurrencyDetectionApp()), // เปลี่ยนเป็นหน้าที่ต้องการ
-                        );
-                      },
-                      child: Text('กลับไปหน้าหลัก'),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'ไปหน้า first.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.upload_outlined),
+            label: 'ไปหน้า main.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'ไปหน้า member.dart',
+          ),
+        ],
+        onTap: (index) {
+          // Navigating based on the selected index
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CurrencyDetectionApp()), // เปลี่ยนเป็นหน้าที่ต้องการ
+              );
+              break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UploadPage()), // เปลี่ยนเป็นหน้าที่ต้องการ
+              );
+              break;
+            case 2:
+              // Already on MemberPage, do nothing or show a message
+              break;
+          }
+        },
       ),
     );
   }

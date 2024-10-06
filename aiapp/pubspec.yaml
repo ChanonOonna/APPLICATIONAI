@@ -75,7 +75,7 @@ flutter:
     - assets/sound2.mp3
     - assets/pic1.png
     - assets/pic1.jpg
-    - assets/pic1.avif
+    - assets/pic2.jpg
     
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

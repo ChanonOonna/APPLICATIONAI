@@ -20,7 +20,41 @@ class CurrencyDetectionApp extends StatelessWidget {
   }
 }
 
-class CurrencyDetectionPage extends StatelessWidget {
+class CurrencyDetectionPage extends StatefulWidget {
+  @override
+  _CurrencyDetectionPageState createState() => _CurrencyDetectionPageState();
+}
+
+class _CurrencyDetectionPageState extends State<CurrencyDetectionPage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        // Navigate to the introduction page
+        // You can create an IntroductionPage and navigate to it
+        break;
+      case 1:
+        // Navigate to the main page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyApp()),
+        );
+        break;
+      case 2:
+        // Navigate to the member page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MemberPage()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,63 +63,60 @@ class CurrencyDetectionPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // ใส่ภาพพื้นหลัง
+          // Background image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/pic1.png'), // ที่อยู่ของภาพพื้นหลัง
-                fit: BoxFit.cover, // ขยายให้เต็มหน้าจอ
+                image: AssetImage('assets/pic1.png'), // Path to the background image
+                fit: BoxFit.cover, // Cover the entire screen
               ),
             ),
           ),
-          // เนื้อหาที่อยู่ด้านบนของพื้นหลัง
+          // Content on top of the background
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(height: 20), // Adjust space for the AppBar
+                // Image in the center at the top
+                SizedBox(
+                  width: 200,
+                  height: 300 ,
+                  child: Image.asset('assets/pic2.jpg'), // Path to the image you want to overlay
+                ),
+                SizedBox(height: 20), // Space between the image and text
                 Text(
                   'โปรแกรมตรวจจับธนบัตรและเงิน',
                   style: TextStyle(
                     fontSize: 24,
-                    color: const Color.fromARGB(255, 0, 0, 0), // ตั้งค่าสีของข้อความให้ดูได้บนพื้นหลัง
+                    color: const Color.fromARGB(255, 0, 0, 0), // Text color
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // นำทางไปยังหน้า UploadPage
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => UploadPage()),
-                    );
-                  },
-                  child: Text('ดำเนินการ'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20), // Additional space below the text
               ],
             ),
           ),
         ],
       ),
-      // เพิ่ม FloatingActionButton เพื่อวางปุ่ม Information ที่มุมขวาล่าง
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // นำทางไปยังหน้า MemberPage
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MemberPage()),
-          );
-        },
-        child: Icon(Icons.info), // ตั้งค่าเป็นไอคอนข้อมูล
-        tooltip: 'Information',
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'แนะนำแอพ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.upload_outlined),
+            label: 'ไปหน้า main.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'ไปหน้า member.dart',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // วางปุ่มที่มุมขวาล่าง
     );
   }
 }

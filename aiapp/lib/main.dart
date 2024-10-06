@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'service.dart';
 import 'result.dart';
+import 'member.dart';
+import 'first.dart';
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -30,9 +33,11 @@ class _UploadPageState extends State<UploadPage> {
   final AudioPlayer audioPlayer = AudioPlayer();
   final AudioCache player = AudioCache();
 
+  // ตัวแปรสำหรับติดตามหน้าเพจที่เลือก
+  int _selectedIndex = 1;
+
   Future<void> _pickVideo() async {
-    final html.FileUploadInputElement uploadInput =
-        html.FileUploadInputElement();
+    final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
     uploadInput.accept = 'video/*';
     uploadInput.click();
 
@@ -46,41 +51,42 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   Future<void> _showProcessingDialog(BuildContext context) {
-    player.play('sound.mp3');
+  player.play('sound.mp3');
 
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 20),
-                  Expanded(child: Text("Processing video, please wait...")),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    player.play('sound1.mp3');
-                    setState(() {
-                      _isProcessing = false;
-                    });
-                    Navigator.pop(context);
-                    audioPlayer.stop();
-                  },
-                  child: Text('Cancel'),
-                ),
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Expanded(child: Text("กำลังประมวลผล...")),
               ],
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  player.play('sound1.mp3'); // เล่นเสียง
+                  setState(() {
+                    _isProcessing = false;
+                  });
+                  Navigator.pop(context); // ปิด popup
+                  audioPlayer.stop(); // หยุดเสียง
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 
   Future<void> _uploadVideo() async {
     if (_videoFile != null) {
@@ -88,22 +94,17 @@ class _UploadPageState extends State<UploadPage> {
         _isProcessing = true;
       });
 
-      // เปิด popup แสดงสถานะการประมวลผล
       _showProcessingDialog(context);
 
-      // ส่งวิดีโอไปยัง API
       apiService.sendVideo(_videoFile!);
 
-      // ฟังผลลัพธ์จาก API
       apiService.listenForResults((videoUrl) {
         if (_isProcessing) {
-          // ปิด popup เมื่อประมวลผลเสร็จ
           Navigator.pop(context);
           setState(() {
             _isProcessing = false;
           });
 
-          // นำทางไปยังหน้า ResultPage
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -111,10 +112,34 @@ class _UploadPageState extends State<UploadPage> {
             ),
           );
 
-          // หยุดเสียงเมื่อประมวลผลเสร็จสิ้น
           audioPlayer.stop();
         }
       });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // นำทางไปยังหน้าเพจที่เลือก
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CurrencyDetectionApp()), // เปลี่ยนไปยัง first.dart
+        );
+        break;
+      case 1:
+        // อยู่ที่หน้า UploadPage
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MemberPage()), // เปลี่ยนไปยัง member.dart
+        );
+        break;
     }
   }
 
@@ -165,8 +190,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: Text('Pick Video'),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -175,14 +199,31 @@ class _UploadPageState extends State<UploadPage> {
                   child: Text('Upload'),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'ไปหน้า first.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.upload_outlined),
+            label: 'ไปหน้า main.dart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'ไปหน้า member.dart',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
