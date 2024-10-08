@@ -42,7 +42,7 @@ class MemberPage extends StatelessWidget {
                         Text(
                           'สมาชิกคนที่ 1',
                           style: TextStyle(
-                            fontSize: 30, // ขนาดฟอนต์ที่ใหญ่ขึ้น
+                            fontSize: 20, // ขนาดฟอนต์ที่ใหญ่ขึ้น
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -77,7 +77,7 @@ class MemberPage extends StatelessWidget {
                         Text(
                           'สมาชิกคนที่ 2',
                           style: TextStyle(
-                            fontSize: 30, // ขนาดฟอนต์ที่ใหญ่ขึ้น
+                            fontSize: 20, // ขนาดฟอนต์ที่ใหญ่ขึ้น
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -107,7 +107,7 @@ class MemberPage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
+            icon: Icon(Icons.home),
             label: 'ไปหน้า first.dart',
           ),
           BottomNavigationBarItem(

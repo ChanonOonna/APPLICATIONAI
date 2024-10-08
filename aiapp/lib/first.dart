@@ -102,7 +102,7 @@ class _CurrencyDetectionPageState extends State<CurrencyDetectionPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
+            icon: Icon(Icons.home),
             label: 'แนะนำแอพ',
           ),
           BottomNavigationBarItem(

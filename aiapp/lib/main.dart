@@ -6,7 +6,6 @@ import 'result.dart';
 import 'member.dart';
 import 'first.dart';
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -49,44 +48,43 @@ class _UploadPageState extends State<UploadPage> {
       });
     });
   }
-
+  //popup
   Future<void> _showProcessingDialog(BuildContext context) {
-  player.play('sound.mp3');
+    player.play('sound.mp3');
 
-  return showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            content: Row(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Expanded(child: Text("กำลังประมวลผล...")),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  player.play('sound1.mp3'); // เล่นเสียง
-                  setState(() {
-                    _isProcessing = false;
-                  });
-                  Navigator.pop(context); // ปิด popup
-                  audioPlayer.stop(); // หยุดเสียง
-                },
-                child: Text('Cancel'),
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Expanded(child: Text("กำลังประมวลผล...")),
+                ],
               ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
-
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    player.play('sound1.mp3'); // เล่นเสียง
+                    setState(() {
+                      _isProcessing = false;
+                    });
+                    Navigator.pop(context); // ปิด popup
+                    audioPlayer.stop(); // หยุดเสียง
+                  },
+                  child: Text('Cancel'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   Future<void> _uploadVideo() async {
     if (_videoFile != null) {
@@ -96,15 +94,18 @@ class _UploadPageState extends State<UploadPage> {
 
       _showProcessingDialog(context);
 
+      // Sending video file
       apiService.sendVideo(_videoFile!);
 
+      // Listening for results
       apiService.listenForResults((videoUrl) {
         if (_isProcessing) {
-          Navigator.pop(context);
+          Navigator.pop(context); // Close the processing dialog
           setState(() {
             _isProcessing = false;
           });
 
+          // Navigate to the ResultPage
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -210,7 +211,7 @@ class _UploadPageState extends State<UploadPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
+            icon: Icon(Icons.home),
             label: 'ไปหน้า first.dart',
           ),
           BottomNavigationBarItem(
