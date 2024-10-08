@@ -113,7 +113,7 @@ class _ResultPageState extends State<ResultPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
+            icon: Icon(Icons.home),
             label: 'ไปหน้า first.dart',
           ),
           BottomNavigationBarItem(
